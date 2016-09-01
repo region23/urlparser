@@ -1,8 +1,6 @@
 package urlparser_test
 
 import (
-	"fmt"
-
 	. "github.com/pavlik/urlparser"
 
 	. "github.com/onsi/ginkgo"
@@ -181,6 +179,7 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Scheme).Should(Equal("http"))
 			Expect(url.Opaque).Should(Equal("www.google.com/"))
 			Expect(url.Query).Should(Equal("q=go+language"))
+			Expect(url.Relative).Should(BeFalse())
 		})
 
 		It("should correctly parse mailto with path", func() {
@@ -200,6 +199,7 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Scheme).Should(Equal(""))
 			Expect(url.Path).Should(Equal("/foo"))
 			Expect(url.Query).Should(Equal("query=http://bad"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle urls starting //", func() {
@@ -268,6 +268,7 @@ var _ = Describe("Urlparser", func() {
 		It("should handle path", func() {
 			url, _ := Parse("index.php")
 			Expect(url.Path).Should(Equal("./index.php"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
@@ -275,6 +276,7 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Path).Should(Equal("./index.php"))
 			Expect(url.Query).Should(Equal("q=go"))
 			Expect(url.Fragment).Should(Equal("foo"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
@@ -288,26 +290,31 @@ var _ = Describe("Urlparser", func() {
 			url, _ := Parse("viewtopic.php?t=1045")
 			Expect(url.Path).Should(Equal("./viewtopic.php"))
 			Expect(url.Query).Should(Equal("t=1045"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
 			url, _ := Parse("/favicon.png")
 			Expect(url.Path).Should(Equal("/favicon.png"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
 			url, _ := Parse("/public/js/jquery-ui/ui-lightness/jquery-ui-1.10.1.custom.css")
 			Expect(url.Path).Should(Equal("/public/js/jquery-ui/ui-lightness/jquery-ui-1.10.1.custom.css"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
 			url, _ := Parse("/cabinet")
 			Expect(url.Path).Should(Equal("/cabinet"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
 			url, _ := Parse("/howitworks.html")
 			Expect(url.Path).Should(Equal("/howitworks.html"))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 		It("should handle path", func() {
@@ -336,12 +343,40 @@ var _ = Describe("Urlparser", func() {
 
 		It("should handle path", func() {
 			url, _ := Parse("#fragment")
-			fmt.Printf("%#v\n", url)
 			Expect(url.Scheme).Should(Equal(""))
 			Expect(url.DoubleSlash).Should(Equal(""))
 			Expect(url.Host).Should(Equal(""))
 			Expect(url.Path).Should(Equal(""))
 			Expect(url.Fragment).Should(Equal("fragment"))
+			Expect(url.Relative).Should(BeTrue())
+		})
+
+		It("should handle path", func() {
+			url, _ := Parse("../viewtopic.php?t=1045")
+			Expect(url.Path).Should(Equal("../viewtopic.php"))
+			Expect(url.Query).Should(Equal("t=1045"))
+			Expect(url.Relative).Should(BeTrue())
+		})
+
+		// It("should handle path", func() {
+		// 	url, _ := Parse("viewtopic")
+		// 	fmt.Printf("%#v\n", url)
+		// 	Expect(url.Path).Should(Equal("./viewtopic"))
+		// 	Expect(url.Query).Should(Equal(""))
+		// })
+
+		It("should handle path", func() {
+			url, _ := Parse("./viewtopic")
+			Expect(url.Path).Should(Equal("./viewtopic"))
+			Expect(url.Query).Should(Equal(""))
+			Expect(url.Relative).Should(BeTrue())
+		})
+
+		It("should handle path", func() {
+			url, _ := Parse("../viewtopic")
+			Expect(url.Path).Should(Equal("../viewtopic"))
+			Expect(url.Query).Should(Equal(""))
+			Expect(url.Relative).Should(BeTrue())
 		})
 
 	})

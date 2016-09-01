@@ -82,6 +82,9 @@ func Parse(rawURL string) (*URL, error) {
 	result.User, result.Host, result.Port = splitUserinfoHostPortFromAuthority(result.Authority)
 
 	// Detect if this is relative URL or absolute
+	if result.Scheme == "" && result.DoubleSlash == "" && result.Authority == "" && result.Port == "" {
+		result.Relative = true
+	}
 
 	return result, nil
 
@@ -128,8 +131,15 @@ func splitAuthorityFromPath(opaque string) (string, string) {
 	if strings.Contains(matches["authority"], `.php`) || strings.Contains(matches["authority"], `.html`) || strings.Contains(matches["authority"], `.htm`) {
 		matches["path"] = matches["authority"] + matches["path"]
 		matches["authority"] = ""
-		if strings.Index(matches["path"], "/") == -1 && strings.Index(matches["path"], "./") == -1 {
+		if strings.Index(matches["path"], "/") == -1 && strings.Index(matches["path"], "./") == -1 && strings.Index(matches["path"], "../") == -1 {
 			matches["path"] = `./` + matches["path"]
+		}
+	}
+	// ../somepath case
+	if matches["authority"] == `..` || matches["authority"] == `.` {
+		if strings.Index(matches["path"], "/") == 0 {
+			matches["path"] = matches["authority"] + matches["path"]
+			matches["authority"] = ""
 		}
 	}
 
