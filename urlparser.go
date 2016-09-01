@@ -128,8 +128,8 @@ func splitAuthorityFromPath(opaque string) (string, string) {
 	if strings.Contains(matches["authority"], `.php`) || strings.Contains(matches["authority"], `.html`) || strings.Contains(matches["authority"], `.htm`) {
 		matches["path"] = matches["authority"] + matches["path"]
 		matches["authority"] = ""
-		if strings.Index(matches["path"], "/") == -1 {
-			matches["path"] = `/` + matches["path"]
+		if strings.Index(matches["path"], "/") == -1 && strings.Index(matches["path"], "./") == -1 {
+			matches["path"] = `./` + matches["path"]
 		}
 	}
 

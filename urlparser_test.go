@@ -267,12 +267,12 @@ var _ = Describe("Urlparser", func() {
 		// --------- Test relative URLs ----------
 		It("should handle path", func() {
 			url, _ := Parse("index.php")
-			Expect(url.Path).Should(Equal("/index.php"))
+			Expect(url.Path).Should(Equal("./index.php"))
 		})
 
 		It("should handle path", func() {
 			url, _ := Parse("index.php?q=go#foo")
-			Expect(url.Path).Should(Equal("/index.php"))
+			Expect(url.Path).Should(Equal("./index.php"))
 			Expect(url.Query).Should(Equal("q=go"))
 			Expect(url.Fragment).Should(Equal("foo"))
 		})
@@ -286,7 +286,7 @@ var _ = Describe("Urlparser", func() {
 
 		It("should handle path", func() {
 			url, _ := Parse("viewtopic.php?t=1045")
-			Expect(url.Path).Should(Equal("/viewtopic.php"))
+			Expect(url.Path).Should(Equal("./viewtopic.php"))
 			Expect(url.Query).Should(Equal("t=1045"))
 		})
 
