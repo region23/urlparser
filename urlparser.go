@@ -1,8 +1,13 @@
 package urlparser
 
 import (
+	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/PuerkitoBio/purell"
+	"golang.org/x/net/idna"
 )
 
 /*
@@ -193,3 +198,79 @@ func namedMatches(matches []string, r *regexp.Regexp) map[string]string {
 	}
 	return result
 }
+
+// ToNetURL converts an urlparser.URL in to a net/url.URL
+func (u *URL) ToNetURL() *url.URL {
+	// FIXME users of net/url may expect most of these to be decoded
+	host := ""
+	if u.Host != "" {
+		host = u.Host
+
+		if u.Port != "" {
+			host = fmt.Sprintf("%s:%s", host, u.Port)
+		}
+	}
+
+	ret := &url.URL{
+		Scheme: u.Scheme,
+		//User: TODO
+		Host:     host,
+		Path:     u.Path,
+		RawPath:  u.Path,
+		RawQuery: u.Query,
+		Fragment: u.Fragment,
+	}
+
+	if u.Authority == "" {
+		ret.Opaque = u.Opaque
+	}
+
+	return ret
+}
+
+const normalizeFlags purell.NormalizationFlags = purell.FlagRemoveDefaultPort |
+	purell.FlagDecodeDWORDHost | purell.FlagDecodeOctalHost | purell.FlagDecodeHexHost |
+	purell.FlagRemoveUnnecessaryHostDots | purell.FlagRemoveDotSegments | purell.FlagRemoveDuplicateSlashes |
+	purell.FlagUppercaseEscapes | purell.FlagDecodeUnnecessaryEscapes | purell.FlagEncodeNecessaryEscapes |
+	purell.FlagSortQuery
+
+// TODO Normalize NEED REALIZE
+// Normalize returns normalized URL string.
+// Behavior:
+// 1. Remove unnecessary host dots.
+// 2. Remove default port (http://localhost:80 becomes http://localhost).
+// 3. Remove duplicate slashes.
+// 4. Remove unnecessary dots from path.
+// 5. Sort query parameters.
+// 6. Decode host IP into decimal numbers.
+// 7. Handle escape values.
+// 8. Decode Punycode domains into UTF8 representation.
+func (u *URL) Normalize() error {
+	var err error
+	// Decode Punycode
+	host, err := idna.ToUnicode(u.Host)
+	if err != nil {
+		return err
+	}
+
+	u.Host = strings.ToLower(host)
+	u.Scheme = strings.ToLower(u.Scheme)
+
+	netURL := u.ToNetURL()
+
+	normalized := purell.NormalizeURL(netURL, normalizeFlags)
+	fmt.Println(normalized)
+	u, err = Parse(normalized)
+	return err
+}
+
+// NormalizeString returns normalized URL string.
+// It's a shortcut for Parse() and Normalize() funcs.
+// func NormalizeString(rawURL string) (string, error) {
+// 	u, err := Parse(rawURL)
+// 	if err != nil {
+// 		return "", err
+// 	}
+
+// 	return u.Normalize()
+// }

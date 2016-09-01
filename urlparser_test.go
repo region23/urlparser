@@ -128,8 +128,8 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Host).Should(Equal("www.google.com"))
 			Expect(url.Path).Should(Equal("/file%20one%26two"))
 
-			// nUrl := url.Normalize()
-			// Expect(nUrl.Path).Should(Equal("/file one&two"))
+			// _ := url.Normalize()
+			// Expect(url.Path).Should(Equal("/file one&two"))
 		})
 
 		It("should parse user", func() {
@@ -149,8 +149,8 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Host).Should(Equal("www.google.com"))
 			Expect(url.Path).Should(Equal("/"))
 
-			// nUrl := url.Normalize()
-			// Expect(nUrl.UserInfo).Should(Equal("john doe"))
+			// _ := url.Normalize()
+			// Expect(userInfo.Username).Should(Equal("john doe"))
 		})
 
 		It("should parse query", func() {
@@ -170,8 +170,8 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Path).Should(Equal("/a%20b"))
 			Expect(url.Query).Should(Equal("q=c+d"))
 
-			// nUrl := url.Normalize()
-			// Expect(nUrl.Path).Should(Equal("/a b"))
+			// _ := url.Normalize()
+			// Expect(url.Path).Should(Equal("/a b"))
 		})
 
 		It("should correctly parse paths without leading slash", func() {
