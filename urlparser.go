@@ -274,3 +274,9 @@ func (u *URL) Normalize() error {
 
 // 	return u.Normalize()
 // }
+
+// RelToAbs transform relative path to absolute
+// Received current site url & relative URL that need to stick
+// func RelToAbs(currentURL, relativeURL string) *URL {
+
+// }
