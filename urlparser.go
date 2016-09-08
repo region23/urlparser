@@ -245,12 +245,12 @@ const normalizeFlags purell.NormalizationFlags = purell.FlagRemoveDefaultPort |
 // 6. Decode host IP into decimal numbers.
 // 7. Handle escape values.
 // 8. Decode Punycode domains into UTF8 representation.
-func (u *URL) Normalize() error {
-	var err error
+func (u *URL) Normalize() (string, error) {
+	//var err error
 	// Decode Punycode
 	host, err := idna.ToUnicode(u.Host)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	u.Host = strings.ToLower(host)
@@ -259,9 +259,8 @@ func (u *URL) Normalize() error {
 	netURL := u.ToNetURL()
 
 	normalized := purell.NormalizeURL(netURL, normalizeFlags)
-	fmt.Println(normalized)
-	u, err = Parse(normalized)
-	return err
+	//fmt.Println(normalized)
+	return normalized, err
 }
 
 // NormalizeString returns normalized URL string.
