@@ -1,6 +1,8 @@
 package urlparser_test
 
 import (
+	"fmt"
+
 	. "github.com/pavlik/urlparser"
 
 	. "github.com/onsi/ginkgo"
@@ -358,12 +360,12 @@ var _ = Describe("Urlparser", func() {
 			Expect(url.Relative).Should(BeTrue())
 		})
 
-		// It("should handle path", func() {
-		// 	url, _ := Parse("viewtopic")
-		// 	fmt.Printf("%#v\n", url)
-		// 	Expect(url.Path).Should(Equal("./viewtopic"))
-		// 	Expect(url.Query).Should(Equal(""))
-		// })
+		It("should handle path", func() {
+			url, _ := Parse("viewtopic")
+			fmt.Printf("%#v\n", url)
+			Expect(url.Path).Should(Equal("./viewtopic"))
+			Expect(url.Query).Should(Equal(""))
+		})
 
 		It("should handle path", func() {
 			url, _ := Parse("./viewtopic")

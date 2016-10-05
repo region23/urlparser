@@ -80,6 +80,22 @@ type URL struct {
 // 4. It lowercases the Host (not only the Scheme).
 func Parse(rawURL string) (*URL, error) {
 
+	// если это относительный path вида somepage, то ничего не делаем и не парсим
+	// может содержать буквы, цифры, знаки дефиса, точки
+	isPrimitivePath, err := isPrimitivePath(rawURL)
+	fmt.Println(rawURL, " isPrimitive ", isPrimitivePath)
+	if err != nil {
+		return nil, err
+	}
+	if isPrimitivePath {
+		result := &URL{}
+		result.Input = rawURL
+		result.Relative = true
+		result.Path = `./` + rawURL
+		return result, nil
+
+	}
+
 	result := &URL{}
 	result.Input = rawURL
 	result.Scheme, result.DoubleSlash, result.Opaque, result.Query, result.Fragment = Split(rawURL)
@@ -101,6 +117,10 @@ var (
 	ipv4Regexp   = regexp.MustCompile(`^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$`)
 	ipv6Regexp   = regexp.MustCompile(`^\[[a-fA-F0-9:]+\]$`)
 )
+
+func isPrimitivePath(rawURL string) (bool, error) {
+	return regexp.MatchString(`^[a-zA-Z0-9-.]*$`, rawURL)
+}
 
 // Split splits an URL in to its major components (scheme, opaque, query, fragment)
 func Split(url string) (string, string, string, string, string) {
