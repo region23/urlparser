@@ -83,7 +83,6 @@ func Parse(rawURL string) (*URL, error) {
 	// если это относительный path вида somepage, то ничего не делаем и не парсим
 	// может содержать буквы, цифры, знаки дефиса, точки
 	isPrimitivePath, err := isPrimitivePath(rawURL)
-	fmt.Println(rawURL, " isPrimitive ", isPrimitivePath)
 	if err != nil {
 		return nil, err
 	}
